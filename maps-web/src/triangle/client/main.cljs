@@ -1309,7 +1309,7 @@
     :hw [3866 3867]
     :width 458
     :height 343
-    :rename {"Apps/DFM-Maps.lua" "Apps/DFM-MapsII.lua"}}])
+    :rename {"Apps/DFM-Maps.lua" "Apps/DFM-MapsL.lua"}}])
 
 (defn make-app-request [db base-app-json {:keys [version-suffix hw width height rename]}]
   (let [fields-json (into {}
