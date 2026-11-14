@@ -341,15 +341,15 @@
   "rename: {original-destination new-destination} for base-app files."
   [yoururl base-app dynamic-files app-json-overrides rename]
   (let [base "compiled-apps"
-        base-files (for [f (process-file-spec {"app" base-app})]
-                     (update f :destination #(get rename % %)))
+        effective-name (fn [n] (get rename n n))
         files (->> dynamic-files
                    (partition-all apps-threads)
                    (mapcat (fn [batch]
                              (->> batch
                                   (mapv #(future (process-file-spec %)))
                                   (mapcat deref))))
-                   (into (vec base-files))
+                   (concat (for [f (process-file-spec {"app" base-app})]
+                             (update f :destination effective-name)))
                    (mapv (partial add-cas-url yoururl)))
         manifest-file (io/resource (str base "/" base-app "/App.json"))
         
