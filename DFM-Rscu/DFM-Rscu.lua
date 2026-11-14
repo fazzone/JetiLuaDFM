@@ -17,7 +17,7 @@
 local appName = "DFM-Rscu"
 local pathApp = "Apps/"..appName.."/"
 local RTH = {}
-local buttonText =  {{"-","+","Steer","Turn","Erase"},{"Pt A","Pt B","","",""}}
+local buttonText =  {{"-","+","","","Erase"},{"Pt A","Pt B","","",""}}
 local buttonSet = 1
 local config = {}
 local flyingOutbound
@@ -958,13 +958,13 @@ local function keyPressGPS(key)
 	 if magIdx < 1 then magIdx = 1 end
 	 setMag(magIdx)
       elseif key == KEY_3 then
-	 RTH.settings.circStrat = RTH.settings.circStrat + 1
-	 if RTH.settings.circStrat > #inv(steerMode) then RTH.settings.circStrat = 1 end
-	 system.pSave("RTHcircStrat", RTH.settings.circStrat)
+	 --RTH.settings.circStrat = RTH.settings.circStrat + 1
+	 --if RTH.settings.circStrat > #inv(steerMode) then RTH.settings.circStrat = 1 end
+	 --system.pSave("RTHcircStrat", RTH.settings.circStrat)
       elseif key == KEY_4 then
-	 RTH.settings.turnDir = RTH.settings.turnDir + 1
-	 if RTH.settings.turnDir > #inv(turnMode) then RTH.settings.turnDir = 1 end
-	 system.pSave("RTHturnDir", RTH.settings.turnDir)
+	 --RTH.settings.turnDir = RTH.settings.turnDir + 1
+	 --if RTH.settings.turnDir > #inv(turnMode) then RTH.settings.turnDir = 1 end
+	 --system.pSave("RTHturnDir", RTH.settings.turnDir)
       elseif key == KEY_5 then -- Erase ribbon
 	 print("Erase ribbon")
 	 RTH.ribbon[magIdx] = lcd.createImage(Screen.width, Screen.height)
@@ -1316,7 +1316,7 @@ local function initForm(subform)
 			      DFM_Rscu_CircleOuter = x * CMULT
 			   end
 			   return end),
-		     {width=155, font=FONT_NORMAL, algignRight=false})
+		     {width=155, font=font, algignRight=false})
 
       --[[
       form.addRow(2)
@@ -1326,7 +1326,7 @@ local function initForm(subform)
 			   magIdx = x
 			   system.pSave("magIdx", magIdx)
 			   return end),
-		     {width=155, font=FONT_NORMAL, algignRight=false})
+		     {width=155, font=font, algignRight=false})
       --]]
       form.addRow(1)
       form.addLink((function()
@@ -1377,35 +1377,39 @@ local function drawLine(col, row, shape, rotation, lw)
 end
 
 local function printForm()
-   local h = lcd.getTextHeight(FONT_MINI)
+   if Screen.width == 320 then font = FONT_MINI else font = FONT_NORMAL end
+
+   local h = lcd.getTextHeight(font)
+
    if pointsToRender > 2 then
-      lcd.drawText(10, Screen.height - 3*h, "Flight points cached: "..pointsToRender.."/100", FONT_MINI)
+      lcd.drawText(10, Screen.height - 3*h, "Flight points cached: "..pointsToRender.."/100", font)
    end
+
    if activeSf == 13 then 
       if RTH.curPos then
 	 local lt, lg = gps.getValue(RTH.curPos)
-	 lcd.drawText(10, Screen.height - 8*h, string.format("Current: (%.5f°,%.5f°)", lt, lg), FONT_MINI)
+	 lcd.drawText(10, Screen.height - 7*h, string.format("Current: (%.5f°,%.5f°)", lt, lg), font)
       end
       if pointA then
 	 local lt, lg = gps.getValue(pointA)
-	 lcd.drawText(10, Screen.height - 7*h, string.format("Point A:  (%.5f°,%.5f°)", lt, lg), FONT_MINI)
+	 lcd.drawText(10, Screen.height - 6*h, string.format("Point A:  (%.5f°,%.5f°)", lt, lg), font)
       else
-	 lcd.drawText(10, Screen.height - 7*h, "Point A not set", FONT_MINI)	 
+	 lcd.drawText(10, Screen.height - 6*h, "Point A not set", font)	 
       end
       if pointB then
 	 local lt, lg = gps.getValue(pointB) 
-	 lcd.drawText(10, Screen.height - 6*h, string.format("Point B:  (%.5f°,%.5f°)", lt, lg), FONT_MINI)
+	 lcd.drawText(10, Screen.height - 5*h, string.format("Point B:  (%.5f°,%.5f°)", lt, lg), font)
       else
-	 lcd.drawText(10, Screen.height - 6*h, "Point B not set", FONT_MINI)
+	 lcd.drawText(10, Screen.height - 5*h, "Point B not set", font)
       end
       if pointA and RTH.curPos then
 	 local pp
 	 if pointB then pp = pointB else pp = RTH.curPos end
 	 local dd = gps.getDistance(pointA, pp)
 	 local bb = gps.getBearing(pointA, pp)
-	 lcd.drawText(10, Screen.height - 5*h,
+	 lcd.drawText(10, Screen.height - 4*h,
 		      string.format("A->B  %.1fm %d°  Field rotation %.1f°", dd, bb, bb - 90),
-		      FONT_MINI)
+		      font)
       end
    end
 end
@@ -1965,7 +1969,6 @@ local function init()
    
    system.registerTelemetry(1, "DFM-Rscu Map", 4, printTeleGPS, keyPressGPS)
    system.registerTelemetry(2, "DFM-Rscu Status", 0, printTeleStatus)
-   --local buttonText =  {{"-","+","Steer","Turn","Erase"},{"Pt A","Pt B","","",""}}
    
    if system.setTelemetryButton then
 

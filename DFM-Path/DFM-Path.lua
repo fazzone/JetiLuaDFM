@@ -231,7 +231,7 @@ local function loop()
    local altnow
    local function ns(i) return (i-1)%3 + 1 end
    
-   if DFM_Maps_Field ~= 0 and not gotTriangle then
+   if DFM_Maps_Field and DFM_Maps_Field ~= 0 and not gotTriangle then
       print("got a triangle")
       if not pathIndex then pathIndex = 0 end
       local pp
